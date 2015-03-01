@@ -74,7 +74,7 @@ void MyText(Mat img, Point bottom_L,string text )
 
 }
 
-
+//old test code ignore 
 /*
 void MyPolygon(Mat img)
 {
@@ -180,12 +180,13 @@ int main()
 	int kinect_optimal_distance = 20;
 
 	//Strings for UI
-	string text_1 = "WELCOME, KINECT BASE SIGN LANGUAGE INSTRUCTION";
+	string text_1 = "KINECT BASED SIGN LANGUAGE INSTRUCTION";
 	string text_2 = "Calibration is needed plese step into the corect location infront of the Kinect";
 	string text_3 = "Plese step closer to the Kinect";
 	string text_4 = "plese step away from the Kinect";
 	string text_5 = "calibration Complete";
 	string text_6 = "press any key to continue";
+	string text_7 = "MADE BY: Vivek Sridhar, Sean Reidy, Swetlika Tripathy, Jerry Chee";
 	
 
 
@@ -197,6 +198,7 @@ int main()
 	Mat calibration_image = Mat::zeros(height, width, CV_8UC3);
 	MyText(welcome_image, Point(height/2 ,50), text_1);
 	MyText(welcome_image, Point(height /2, 70), text_6);
+	MyText(welcome_image, Point(height / 2-100, 100), text_7);
 	MyText(calibration_image, Point(30, 30),text_5);
 	MyText(calibration_image, Point(30, 45), text_6);
 
@@ -233,6 +235,8 @@ int main()
 			printf("Plese step closer to the Kinect\n");
 		}
 		else{
+			printf("Stand still!");
+			std::this_thread::sleep_for(chrono::seconds(4));
 			Calibration_complete = true;
 		}
 	}

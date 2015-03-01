@@ -1,6 +1,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
+#include <thread>
+
 
 #define w 400
 
@@ -35,7 +37,7 @@ void MyEllipse(Mat img, double angle)
 		lineType);
 }
 
-void MyFilledCircle(Mat img, Point center)
+void MyFilledCircle(Mat img, Point center,int r, int g, int b)
 {
 	int thickness = -1;
 	int lineType = 8;
@@ -43,16 +45,42 @@ void MyFilledCircle(Mat img, Point center)
 	circle(img,
 		center,
 		w / 32.0,
-		Scalar(0, 0, 255),
+		Scalar(r, g, b),
 		thickness,
 		lineType);
 }
 
+void MyRectangel(Mat img, Point center, int width, int height )
+{
+	int thickness = 3;
+	int lineType = 8;
+	int delta_w = width / 2;
+	int delta_h = height / 2;
+
+
+	rectangle(img,
+		Point(center.x - delta_w , center.y - delta_h),
+		Point(center.x +delta_w, center.y + delta_h),
+		Scalar(0, 255, 255),
+		-1,
+		8);
+	
+
+}
+
+void MyText(Mat img, Point bottom_L,string text )
+{
+	putText(img, text, bottom_L, FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(200, 200, 250), 1, CV_AA);
+
+}
+
+
+/*
 void MyPolygon(Mat img)
 {
 	int lineType = 8;
 
-	/** Create some points */
+	
 	Point rook_points[1][20];
 	rook_points[0][0] = Point(w / 4.0, 7 * w / 8.0);
 	rook_points[0][1] = Point(3 * w / 4.0, 7 * w / 8.0);
@@ -85,7 +113,8 @@ void MyPolygon(Mat img)
 		Scalar(255, 255, 255),
 		lineType);
 }
-
+*/
+/*
 int main()
 {
 	//window name 
@@ -96,7 +125,15 @@ int main()
 	Mat atom_image = Mat::zeros(w, w, CV_8UC3);
 	Mat rook_image = Mat::zeros(w, w, CV_8UC3);
 
-	//attom drawing 
+	string test = "this is a test";
+	string test_b = " this is also a test";
+
+	MyText(atom_image, Point(w / 2, w / 2), test);
+	MyText(rook_image, Point((w / 2) + 10, (w / 2) + 10 ), test_b);
+
+
+
+	/*attom drawing 
 	MyEllipse(atom_image, 90);
 	MyEllipse(atom_image, 0);
 	MyEllipse(atom_image, 45);
@@ -104,7 +141,7 @@ int main()
 	MyFilledCircle(atom_image, Point(1 / 2.0, w / 2.0));
 
 	//Rook
-	MyPolygon(rook_image);
+	//MyPolygon(rook_image);
 
 	/// 2.b. Creating rectangles
 	rectangle(rook_image,
@@ -128,5 +165,67 @@ int main()
 	waitKey(0);
 	return(0);
 
+
+}
+*/
+
+int main()
+{
+	//window names and values
+	char welcome_window[] = "Welcome";
+	char calibration_window[] = "Calibration";
+	int width = 1280;
+	int height = 720;
+	int kinect_distance = 0; // note need to replace, with actual value;
+	int kinect_optimal_distance = 10;
+
+	//Strings for UI
+	string text_1 = "WELCOME, KINECT BASE SIGN LANGUAGE INSTRUCTION";
+	string text_2 = "Calibration is needed plese step into the corect location infront of the Kinect";
+	string text_3 = "Plese step closer to the Kinect";
+	string text_4 = "plese step away from the Kinect";
+	string text_5 = "calibration Complete";
+	string text_6 = "press any key to continue";
+	
+
+
+	// create window, and image constuction
+	Mat welcome_image = Mat::zeros(height, width, CV_8UC3);
+	Mat calibration_image = Mat::zeros(height, width, CV_8UC3);
+	MyText(welcome_image, Point(50 ,50), text_1);
+	MyText(calibration_image, Point(30, 30),text_5);
+	MyText(calibration_image, Point(30, 45), text_6);
+	
+
+
+
+	//UI FLOW
+	imshow(welcome_window, welcome_image);
+	waitKey(0);
+	destroyWindow(welcome_window);
+	printf("Calibration is needed plese step into the corect location infront of the Kinect\n");
+	std::this_thread::sleep_for(chrono::seconds(5));
+	printf("Calibration Start\n");
+
+	// Calibration change values later 
+	bool Calibration_complete = false;
+	while (!Calibration_complete){
+		std::this_thread::sleep_for(chrono::seconds(2));
+		kinect_distance++;
+		if (kinect_distance < kinect_optimal_distance - 10){
+			printf("plese step away from the Kinect\n");
+		}
+		else if (kinect_distance > kinect_optimal_distance + 10){
+			printf("Plese step closer to the Kinect\n");
+		}
+		else{
+			Calibration_complete = true;
+		}
+	}
+	imshow(calibration_window, calibration_image);
+	waitKey(0);
+	
+	
+	return(0);
 
 }

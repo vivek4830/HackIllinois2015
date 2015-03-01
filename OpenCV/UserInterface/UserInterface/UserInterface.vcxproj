@@ -43,6 +43,7 @@
     <LinkIncremental>true</LinkIncremental>
     <IncludePath>$(KINECTSDK20_DIR)\inc;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
     <LibraryPath>$(KINECTSDK20_DIR)\lib\x86;$(VC_LibraryPath_x86);$(WindowsSDK_LibraryPath_x86);</LibraryPath>
+    <IntDir>$(Configuration)\$(ProjectName)</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>

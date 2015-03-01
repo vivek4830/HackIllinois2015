@@ -13,14 +13,31 @@ using namespace std;
 
 int main()
 {
-	Point **gestures = 
-
+	int glen = 3;
+	Point **gestures = new Point *[glen];
 	Point *high_five = new Point [5];
+	gestures[0] = high_five;
 	high_five[0] = Point(-82,-4);
 	high_five[1] = Point(-63, 84);
 	high_five[2] = Point(-37, 103);
 	high_five[3] = Point(1, 112);
 	high_five[4] = Point(32, 76);
+
+	Point *b = new Point [5];
+	gestures[1] = b;
+	b[0] = Point(-45, 39);
+	b[1] = Point(-41, 94);
+	b[2] = Point(-30, 103);
+	b[3] = Point(-8, 100);
+	b[4] = Point(15, 68);
+
+	Point *c = new Point [5];
+	gestures[2] = c;
+	c[0] = Point(-40, 37);
+	c[1] = Point(-35, 49);
+	c[2] = Point(-14, 41);
+	c[3] = Point(-121, 69);
+	c[4] = Point(29, 40);
 
 
 	VideoCapture cap(1);
@@ -143,8 +160,7 @@ int main()
 		imshow("Thresholded Image Blue", imgThresholded[3]);
 		imshow("Thresholded Image Pink", imgThresholded[4]);
 		imshow("Thresholded Image Purple", imgThresholded[5]);
-
-
+		
 		Point *p_curr = new Point [6];
 		int i;
 		for (i = 0; i < 6; i++) {
@@ -168,40 +184,46 @@ int main()
 			putchar('\n');
 			*/
 
+		/*
 		// SAVE GESTURE
 		// write to array
 		if (counter < alen/2) {
-		thumb_holding[counter] = p_curr[0];
-		index_holding[counter] = p_curr[1];
-		middle_holding[counter] = p_curr[2];
-		ring_holding[counter] = p_curr[3];
-		pinky_holding[counter] = p_curr[4];
-		palm_holding[counter] = p_curr[5];
+			thumb_holding[counter] = p_curr[0];
+			index_holding[counter] = p_curr[1];
+			middle_holding[counter] = p_curr[2];
+			ring_holding[counter] = p_curr[3];
+			pinky_holding[counter] = p_curr[4];
+			palm_holding[counter] = p_curr[5];
 
-		counter++;
+			counter++;
 		} else {
-		Point *gesture = avgGesture(palm_holding, thumb_holding,
-		index_holding, middle_holding, ring_holding,
-		pinky_holding, alen);
-		for (i = 0; i < 5; i++) {
-		printf("(%d, %d)\n", gesture[i].x, gesture[i].y);
-		}
-		break;
-		}
-
-		/*
-		// TEST GESTURE
-		
-		// create array to hold transformed coords 
-		Point *transcoord = new Point [5];
-	   	transcoord =  transCoord(p_curr);
-
-		//int test;
-		int glen = 1;
-		if (compareGesture(high_five, glen, transcoord) != -1) {
-			printf("Correct! this is a high-five!\n");
+			Point *gesture = avgGesture(palm_holding, thumb_holding,
+					index_holding, middle_holding, ring_holding,
+					pinky_holding, alen);
+			for (i = 0; i < 5; i++) {
+				printf("(%d, %d)\n", gesture[i].x, gesture[i].y);
+			}
+			break;
 		}
 		*/
+
+			
+		// TEST GESTURE
+
+		// create array to hold transformed coords 
+		Point *transcoord = new Point [5];
+		transcoord =  transCoord(p_curr);
+
+		//int test;
+		if (compareGesture(gestures, glen, transcoord) == 0) {
+		printf("Correct! this is a high-five!\n");
+		} 
+		if (compareGesture(gestures, glen, transcoord) == 1) {
+		printf("Correct! this is the letter b in ASL!\n");
+		}
+		if (compareGesture(gestures, glen, transcoord) == 2) {
+		printf("Correct! this is the letter e in ASL!\n");
+		}
 
 		if (waitKey(20) == 27) {
 			cout <<"esc key is pressed by user"<< endl;

@@ -155,6 +155,8 @@ Point *avgGesture(Point *palm_coords, Point *thumb_coords,
 
 	return avgGestures;
 }
+
+/*
 int compareGesture(Point *gestures, int glen, Point *finger_coords)
 {
 	int delta = 50;
@@ -184,14 +186,14 @@ int compareGesture(Point *gestures, int glen, Point *finger_coords)
 	// second time we search for min;
 	double min_error = differences;
 	int index_min_error = 0;
-	/*
+	
 	for (i = 0; i < glen; i++) {
 		if (differences[i] < min_error) {
 			min_error = differences[i];
 			index_min_error = i;
 		}
 	}
-	*/
+	
 
 	// now we check that min_error is not BIG
 	if (min_error >= BIG) {
@@ -200,12 +202,11 @@ int compareGesture(Point *gestures, int glen, Point *finger_coords)
 		return index_min_error;
 	}
 }
+*/
 
-// save for **gestures
-/*
 int compareGesture(Point **gestures, int glen, Point *finger_coords)
 {
-	int delta = 5;
+	int delta = 20;
 	double BIG = 10000000;
 
 	// build array to hold differences
@@ -248,7 +249,7 @@ int compareGesture(Point **gestures, int glen, Point *finger_coords)
 		return index_min_error;
 	}
 }
-*/
+
 
 Point *transCoord(Point *coords)
 {

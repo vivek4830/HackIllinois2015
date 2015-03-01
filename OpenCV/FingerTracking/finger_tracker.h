@@ -59,5 +59,5 @@ Point *transCoord(Point *coords);
 
 // gives error margin when between
 // the string defines which gesture
-int compareGesture(Point *gestures, int glen, Point *finger_coords);
+int compareGesture(Point **gestures, int glen, Point *finger_coords);
 

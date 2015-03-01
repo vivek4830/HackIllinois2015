@@ -4,7 +4,7 @@
 #include <thread>
 
 
-#define w 400
+#define w 1280
 
 using namespace cv;
 using namespace std;
@@ -70,7 +70,7 @@ void MyRectangel(Mat img, Point center, int width, int height )
 
 void MyText(Mat img, Point bottom_L,string text )
 {
-	putText(img, text, bottom_L, FONT_HERSHEY_COMPLEX_SMALL, 0.8, cvScalar(200, 200, 250), 1, CV_AA);
+	putText(img, text, bottom_L, CV_FONT_HERSHEY_TRIPLEX, 0.8, cvScalar(200, 200, 250), 1, CV_AA);
 
 }
 
@@ -138,7 +138,7 @@ int main()
 	MyEllipse(atom_image, 0);
 	MyEllipse(atom_image, 45);
 	MyEllipse(atom_image, -45);
-	MyFilledCircle(atom_image, Point(1 / 2.0, w / 2.0));
+	MyFilledCircle(atom_image, Point(w / 2.0, w / 2.0));
 
 	//Rook
 	//MyPolygon(rook_image);
@@ -177,7 +177,7 @@ int main()
 	int width = 1280;
 	int height = 720;
 	int kinect_distance = 0; // note need to replace, with actual value;
-	int kinect_optimal_distance = 10;
+	int kinect_optimal_distance = 20;
 
 	//Strings for UI
 	string text_1 = "WELCOME, KINECT BASE SIGN LANGUAGE INSTRUCTION";
@@ -191,16 +191,30 @@ int main()
 
 	// create window, and image constuction
 	Mat welcome_image = Mat::zeros(height, width, CV_8UC3);
+	//EVIL LINES 
+
+	//cv::Mat welcome_image = cv::imread("C:\\Users\\Sean\\Documents\\GitHub\\HackIllinois2015\\OpenCV\\UserInterface\\one.jpeg");
 	Mat calibration_image = Mat::zeros(height, width, CV_8UC3);
-	MyText(welcome_image, Point(50 ,50), text_1);
+	MyText(welcome_image, Point(height/2 ,50), text_1);
+	MyText(welcome_image, Point(height /2, 70), text_6);
 	MyText(calibration_image, Point(30, 30),text_5);
 	MyText(calibration_image, Point(30, 45), text_6);
-	
+
+	MyEllipse(welcome_image, 90);
+	MyEllipse(welcome_image, 0);
+	MyEllipse(welcome_image, 45);
+	MyEllipse(welcome_image, -45);
+	//MyFilledCircle(welcome_image, Point(width/ 2.0, height / 2.0));
 
 
 
 	//UI FLOW
-	imshow(welcome_window, welcome_image);
+	//imshow(welcome_window, welcome_image);
+	for (int i = 0; i <= 1000; i++){
+		rectangle(welcome_image, Point(i * 5, i*10), Point((i * 5) + 5, 5 *i), Scalar(0, 55, 255), CV_FILLED, 4);
+		imshow(welcome_window, welcome_image);
+		std::this_thread::sleep_for(chrono::seconds(1/100));
+	}
 	waitKey(0);
 	destroyWindow(welcome_window);
 	printf("Calibration is needed plese step into the corect location infront of the Kinect\n");
@@ -225,6 +239,8 @@ int main()
 	imshow(calibration_window, calibration_image);
 	waitKey(0);
 	
+
+	//Add program fuctions here 
 	
 	return(0);
 

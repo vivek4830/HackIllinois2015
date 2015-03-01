@@ -1,6 +1,8 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <iostream>
+#include <thread>
+
 
 #define w 400
 
@@ -174,7 +176,8 @@ int main()
 	char calibration_window[] = "Calibration";
 	int width = 1280;
 	int height = 720;
-	int kinect_distance = 100; // note need to replace, with actual value;
+	int kinect_distance = 0; // note need to replace, with actual value;
+	int kinect_optimal_distance = 10;
 
 	//Strings for UI
 	string text_1 = "WELCOME, KINECT BASE SIGN LANGUAGE INSTRUCTION";
@@ -182,6 +185,7 @@ int main()
 	string text_3 = "Plese step closer to the Kinect";
 	string text_4 = "plese step away from the Kinect";
 	string text_5 = "calibration Complete";
+	string text_6 = "press any key to continue";
 	
 
 
@@ -189,7 +193,8 @@ int main()
 	Mat welcome_image = Mat::zeros(height, width, CV_8UC3);
 	Mat calibration_image = Mat::zeros(height, width, CV_8UC3);
 	MyText(welcome_image, Point(50 ,50), text_1);
-	MyText(calibration_image, Point(30, 30),text_2);
+	MyText(calibration_image, Point(30, 30),text_5);
+	MyText(calibration_image, Point(30, 45), text_6);
 	
 
 
@@ -198,27 +203,28 @@ int main()
 	imshow(welcome_window, welcome_image);
 	waitKey(0);
 	destroyWindow(welcome_window);
-	imshow(calibration_window, calibration_image);
-	kinect_distance = 30;
-	/*
-	while (!(kinect_distance <= 20 && kinect_distance >= 50))
-		//Arbitray values, need to change to actual calibrated values, TBD. 
-		printf("%d", 2);
-	{
-		if (kinect_distance < 20){
-			MyText(calibration_image, Point(50, 50), text_4);
-		}
-		else if(kinect_distance > 50){
-			MyText(calibration_image, Point(50, 50), text_3);
-		}
-		MyFilledCircle(calibration_image, Point(100, 100), 255, 0, 0);
-		//updateWindow(calibration_window);
-	}
-	*/
-	MyFilledCircle(calibration_image, Point(100, 100), 0, 255, 0);
-	MyText(calibration_image, Point(50, 50), text_5);
-	waitKey(0);
+	printf("Calibration is needed plese step into the corect location infront of the Kinect\n");
+	std::this_thread::sleep_for(chrono::seconds(5));
+	printf("Calibration Start\n");
 
+	// Calibration change values later 
+	bool Calibration_complete = false;
+	while (!Calibration_complete){
+		std::this_thread::sleep_for(chrono::seconds(2));
+		kinect_distance++;
+		if (kinect_distance < kinect_optimal_distance - 10){
+			printf("plese step away from the Kinect\n");
+		}
+		else if (kinect_distance > kinect_optimal_distance + 10){
+			printf("Plese step closer to the Kinect\n");
+		}
+		else{
+			Calibration_complete = true;
+		}
+	}
+	imshow(calibration_window, calibration_image);
+	waitKey(0);
+	
 	
 	return(0);
 

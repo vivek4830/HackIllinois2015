@@ -1,17 +1,16 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="App.xaml.cs" company="Microsoft">
-//     Copyright (c) Microsoft Corporation.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
+﻿/**
+ * @file App.xaml.cs
+ * @brief Main application file for the Windows C# App
+ * @author Microsoft
+ * @since 28 February 2015
+ */
 
 namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
 {
     using System;
     using System.Windows;
 
-    /// <summary>
     /// Interaction logic for App
-    /// </summary>
     public partial class App : Application
     {
     }

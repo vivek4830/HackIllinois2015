@@ -1,39 +1,46 @@
-﻿//------------------------------------------------------------------------------
-// <copyright file="GestureDetector.cs" company="Microsoft">
-//     Copyright (c) Microsoft Corporation.  All rights reserved.
-// </copyright>
-//------------------------------------------------------------------------------
+﻿/**
+ * @file GestureDetector.cs
+ * @brief This file implements the gesture recognition and processing
+ * from the Kinect.
+ * @author Microsoft, modified by Vivek Sridhar (viveksri@andrew.cmu.edu)
+ * @since 28 February 2015
+ */
 
 namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
 {
     using System;
+    using System.Windows.Forms;
+    using System.Threading;
     using System.Collections.Generic;
     using Microsoft.Kinect;
     using Microsoft.Kinect.VisualGestureBuilder;
 
-    /// <summary>
+    using OpenCvSharp;
+    using OpenCvSharp.UserInterface;
+    using OpenCvSharp.CPlusPlus;
+
     /// Gesture Detector class which listens for VisualGestureBuilderFrame events from the service
     /// and updates the associated GestureResultView object with the latest results for the 'Seated' gesture
-    /// </summary>
     public class GestureDetector : IDisposable
     {
-        /// <summary> Path to the gesture database that was trained with VGB </summary>
-        private readonly string gestureDatabase = "E:\\Documents\\College\\HackIllinois\\HackIllinois2015\\KinectTest\\Database\\SignLanguage.gbd";
+        /// Path to the gesture database that was trained with VGB
+        private readonly string gestureDatabase = "Database\\SignLanguage.gbd";
 
-        /// <summary> Name of the discrete gesture in the database that we want to track </summary>
-        private readonly string seatedGestureName = "Hello_Right";
+        /// Name of the discrete gesture in the database that we want to track
+        private readonly string helloGestureName = "Hello_Right";
+        private readonly string goodbyeGestureName = "Goodbye_Right";
+        private readonly string thankYouGestureName = "ThankYou";
+        private readonly string momGestureName = "Mom";
 
-        /// <summary> Gesture frame source which should be tied to a body tracking ID </summary>
-        private VisualGestureBuilderFrameSource vgbFrameSource = null;
+        private int order = 0;
 
-        /// <summary> Gesture frame reader which will handle gesture events coming from the sensor </summary>
+        /// Gesture frame source which should be tied to a body tracking ID
+        private VisualGestureBuilderFrameSource vgbFrameSource = null; 
+
+        /// Gesture frame reader which will handle gesture events coming from the sensor
         private VisualGestureBuilderFrameReader vgbFrameReader = null;
 
-        /// <summary>
         /// Initializes a new instance of the GestureDetector class along with the gesture frame source and reader
-        /// </summary>
-        /// <param name="kinectSensor">Active sensor to initialize the VisualGestureBuilderFrameSource object with</param>
-        /// <param name="gestureResultView">GestureResultView object to store gesture results of a single body to</param>
         public GestureDetector(KinectSensor kinectSensor, GestureResultView gestureResultView)
         {
             if (kinectSensor == null)
@@ -48,11 +55,11 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
 
             this.GestureResultView = gestureResultView;
 
-            // create the vgb source. The associated body tracking ID will be set when a valid body frame arrives from the sensor.
+            // Create the vgb source. The associated body tracking ID will be set when a valid body frame arrives from the sensor.
             this.vgbFrameSource = new VisualGestureBuilderFrameSource(kinectSensor, 0);
             this.vgbFrameSource.TrackingIdLost += this.Source_TrackingIdLost;
 
-            // open the reader for the vgb frames
+            // Open the reader for the vgb frames
             this.vgbFrameReader = this.vgbFrameSource.OpenReader();
             if (this.vgbFrameReader != null)
             {
@@ -60,28 +67,36 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
                 this.vgbFrameReader.FrameArrived += this.Reader_GestureFrameArrived;
             }
 
-            // load the 'Hello' gesture from the gesture database
+            // Load the 'Hello' gesture from the gesture database
             using (VisualGestureBuilderDatabase database = new VisualGestureBuilderDatabase(this.gestureDatabase))
             {
-                // we could load all available gestures in the database with a call to vgbFrameSource.AddGestures(database.AvailableGestures), 
-                // but for this program, we only want to track one discrete gesture from the database, so we'll load it by name
+                // We could load all available gestures in the database with a call to vgbFrameSource.AddGestures(database.AvailableGestures)
                 foreach (Gesture gesture in database.AvailableGestures)
                 {
-                    if (gesture.Name.Equals(this.seatedGestureName))
+                    if (gesture.Name.Equals(this.helloGestureName))
                     {
+                        this.vgbFrameSource.AddGesture(gesture);
+                    }
+                    if (gesture.Name.Equals(this.goodbyeGestureName))
+                    {
+                        this.vgbFrameSource.AddGesture(gesture);
+                    }
+                    if (gesture.Name.Equals(this.thankYouGestureName))
+                    {
+                        this.vgbFrameSource.AddGesture(gesture);
+                    }
+                    if (gesture.Name.Equals(this.momGestureName)) {
                         this.vgbFrameSource.AddGesture(gesture);
                     }
                 }
             }
         }
 
-        /// <summary> Gets the GestureResultView object which stores the detector results for display in the UI </summary>
+        /// Gets the GestureResultView object which stores the detector results for display in the UI
         public GestureResultView GestureResultView { get; private set; }
 
-        /// <summary>
         /// Gets or sets the body tracking ID associated with the current detector
         /// The tracking ID can change whenever a body comes in/out of scope
-        /// </summary>
         public ulong TrackingId
         {
             get
@@ -98,10 +113,8 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
             }
         }
 
-        /// <summary>
         /// Gets or sets a value indicating whether or not the detector is currently paused
         /// If the body tracking ID associated with the detector is not valid, then the detector should be paused
-        /// </summary>
         public bool IsPaused
         {
             get
@@ -118,19 +131,14 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
             }
         }
 
-        /// <summary>
         /// Disposes all unmanaged resources for the class
-        /// </summary>
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        /// <summary>
         /// Disposes the VisualGestureBuilderFrameSource and VisualGestureBuilderFrameReader objects
-        /// </summary>
-        /// <param name="disposing">True if Dispose was called directly, false if the GC handles the disposing</param>
         protected virtual void Dispose(bool disposing)
         {
             if (disposing)
@@ -151,11 +159,7 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
             }
         }
 
-        /// <summary>
-        /// Handles gesture detection results arriving from the sensor for the associated body tracking Id
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
+        /// Handles gesture detection results arriving from the sensor for the associated body tracking ID
         private void Reader_GestureFrameArrived(object sender, VisualGestureBuilderFrameArrivedEventArgs e)
         {
             VisualGestureBuilderFrameReference frameReference = e.FrameReference;
@@ -163,26 +167,104 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
             {
                 if (frame != null)
                 {
-                    // get the discrete gesture results which arrived with the latest frame
+                    // Get the discrete gesture results which arrived with the latest frame
                     IReadOnlyDictionary<Gesture, DiscreteGestureResult> discreteResults = frame.DiscreteGestureResults;
 
                     if (discreteResults != null)
                     {
-                        // we only have one gesture in this source object, but you can get multiple gestures
+                        Console.WriteLine(this.order);
+                        // We only have one gesture in this source object, but you can get multiple gestures
                         foreach (Gesture gesture in this.vgbFrameSource.Gestures)
                         {
-                            if (gesture.Name.Equals(this.seatedGestureName) && gesture.GestureType == GestureType.Discrete)
+                            if (gesture.Name.Equals(this.helloGestureName) && gesture.GestureType == GestureType.Discrete && this.order == 0)
                             {
                                 DiscreteGestureResult result = null;
                                 discreteResults.TryGetValue(gesture, out result);
 
                                 if (result != null)
                                 {
-                                    // update the GestureResultView object with new gesture result values
+                                    // Update the GestureResultView object with new gesture result values
                                     this.GestureResultView.UpdateGestureResult(true, result.Detected, result.Confidence);
                                     if (result.Detected)
                                     {
-                                        Console.WriteLine("Hello");
+                                        Cv.DestroyWindow("Hello");
+                                        Cv.WaitKey(0);
+                                        CvWindow goodbyeWindow = new CvWindow("Goodbye");
+                                        Cv.MoveWindow("Goodbye", 1280, 0);
+                                        Mat instructionMat = new Mat();
+                                        instructionMat = Cv2.ImRead("Images/Goodbye.jpg");
+                                        CvMat instruction = instructionMat.ToCvMat();
+                                        Cv.ShowImage("Goodbye", instruction);
+                                        this.order = 1;
+                                    }
+                                }
+                            }
+                            if (gesture.Name.Equals(this.goodbyeGestureName) && gesture.GestureType == GestureType.Discrete && this.order == 1)
+                            {
+                                DiscreteGestureResult result = null;
+                                discreteResults.TryGetValue(gesture, out result);
+
+                                if (result != null)
+                                {
+                                    // Update the GestureResultView object with new gesture result values
+                                    this.GestureResultView.UpdateGestureResult(true, result.Detected, result.Confidence);
+                                    if (result.Detected)
+                                    {
+                                        Cv.DestroyWindow("Goodbye");
+                                        Cv.WaitKey(0);
+                                        CvWindow thankYouWindow = new CvWindow("Thank You");
+                                        Cv.MoveWindow("Thank You", 1280, 0);
+                                        Mat instructionMat = new Mat();
+                                        instructionMat = Cv2.ImRead("Images/ThankYou.jpg");
+                                        CvMat instruction = instructionMat.ToCvMat();
+                                        Cv.ShowImage("Thank You", instruction);
+                                        this.order = 2;
+                                    }
+                                }
+                            }
+                            if (gesture.Name.Equals(this.thankYouGestureName) && gesture.GestureType == GestureType.Discrete && this.order == 2)
+                            {
+                                DiscreteGestureResult result = null;
+                                discreteResults.TryGetValue(gesture, out result);
+
+                                if (result != null)
+                                {
+                                    // Update the GestureResultView object with new gesture result values
+                                    this.GestureResultView.UpdateGestureResult(true, result.Detected, result.Confidence);
+                                    if (result.Detected)
+                                    {
+                                        Cv.DestroyWindow("Thank You");
+                                        Cv.WaitKey(0);
+                                        CvWindow momWindow = new CvWindow("Mom");
+                                        Cv.MoveWindow("Mom", 1280, 0);
+                                        Mat instructionMat = new Mat();
+                                        instructionMat = Cv2.ImRead("Images/Mom.jpg");
+                                        CvMat instruction = instructionMat.ToCvMat();
+                                        Cv.ShowImage("Mom", instruction);
+                                        this.order = 3;
+                                    }
+                                }
+                            }
+                            if (gesture.Name.Equals(this.momGestureName) && gesture.GestureType == GestureType.Discrete && this.order == 3)
+                            {
+                                DiscreteGestureResult result = null;
+                                discreteResults.TryGetValue(gesture, out result);
+
+                                if (result != null)
+                                {
+                                    // Update the GestureResultView object with new gesture result values
+                                    this.GestureResultView.UpdateGestureResult(true, result.Detected, result.Confidence);
+                                    if (result.Detected)
+                                    {
+                                        Cv.DestroyWindow("Mom");
+                                        Cv.WaitKey(0);
+                                        CvWindow helloWindow = new CvWindow("Hello");
+                                        Cv.MoveWindow("Hello", 1280, 0);
+                                        Mat instructionMat = new Mat();
+                                        instructionMat = Cv2.ImRead("Images/Hello.jpg");
+                                        CvMat instruction = instructionMat.ToCvMat();
+                                        Cv.ShowImage("Hello", instruction);
+                                        this.order = 0;
                                     }
                                 }
                             }
@@ -192,14 +274,10 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
             }
         }
 
-        /// <summary>
         /// Handles the TrackingIdLost event for the VisualGestureBuilderSource object
-        /// </summary>
-        /// <param name="sender">object sending the event</param>
-        /// <param name="e">event arguments</param>
         private void Source_TrackingIdLost(object sender, TrackingIdLostEventArgs e)
         {
-            // update the GestureResultView object to show the 'Not Tracked' image in the UI
+            // Update the GestureResultView object to show the 'Not Tracked' image in the UI
             this.GestureResultView.UpdateGestureResult(false, false, 0.0f);
         }
     }

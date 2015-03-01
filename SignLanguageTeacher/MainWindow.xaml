@@ -4,7 +4,8 @@
         xmlns:local="clr-namespace:Microsoft.Samples.Kinect.DiscreteGestureBasics"
         Title="Discrete Gesture Basics"
         Height="650" Width="750"
-        Closing="MainWindow_Closing">
+        Closing="MainWindow_Closing"
+        Visibility="Hidden">
     <Window.Resources>
         <SolidColorBrush x:Key="MediumGreyBrush" Color="#ff6e6e6e" />
         <SolidColorBrush x:Key="KinectPurpleBrush" Color="#ff52318f" />

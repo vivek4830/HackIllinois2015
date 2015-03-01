@@ -74,7 +74,7 @@ void MyText(Mat img, Point bottom_L,string text )
 
 }
 
-
+//old test code ignore 
 /*
 void MyPolygon(Mat img)
 {
@@ -235,6 +235,8 @@ int main()
 			printf("Plese step closer to the Kinect\n");
 		}
 		else{
+			printf("Stand still!");
+			std::this_thread::sleep_for(chrono::seconds(4));
 			Calibration_complete = true;
 		}
 	}

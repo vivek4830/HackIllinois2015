@@ -13,6 +13,8 @@ using namespace std;
 
 int main()
 {
+	Point **gestures = 
+
 	Point *high_five = new Point [5];
 	high_five[0] = Point(-82,-4);
 	high_five[1] = Point(-63, 84);
@@ -166,7 +168,6 @@ int main()
 			putchar('\n');
 			*/
 
-		/*
 		// SAVE GESTURE
 		// write to array
 		if (counter < alen/2) {
@@ -187,10 +188,10 @@ int main()
 		}
 		break;
 		}
-		*/
 
+		/*
 		// TEST GESTURE
-
+		
 		// create array to hold transformed coords 
 		Point *transcoord = new Point [5];
 	   	transcoord =  transCoord(p_curr);
@@ -200,6 +201,7 @@ int main()
 		if (compareGesture(high_five, glen, transcoord) != -1) {
 			printf("Correct! this is a high-five!\n");
 		}
+		*/
 
 		if (waitKey(20) == 27) {
 			cout <<"esc key is pressed by user"<< endl;

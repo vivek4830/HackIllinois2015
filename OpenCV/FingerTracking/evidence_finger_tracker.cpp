@@ -13,6 +13,14 @@ using namespace std;
 
 int main()
 {
+	Point *high_five = new Point [5];
+	high_five[0] = Point(-82,-4);
+	high_five[1] = Point(-63, 84);
+	high_five[2] = Point(-37, 103);
+	high_five[3] = Point(1, 112);
+	high_five[4] = Point(32, 76);
+
+
 	VideoCapture cap(1);
 	if (!cap.isOpened()) {
 		cout<<"Cannot open the web cam"<<endl;
@@ -21,8 +29,15 @@ int main()
 
 	namedWindow("Control");
 
-	Scalar gr_low  = Scalar(34, 85, 105);
-	Scalar gr_high = Scalar(69, 255, 255);
+	int H_gr_low = 34;
+	int H_gr_high = 69;
+	int S_gr_low = 85;
+	int S_gr_high = 255;
+	int V_gr_low = 105;
+	int V_gr_high = 255;
+
+	Scalar gr_low  = Scalar(H_gr_low, S_gr_low, V_gr_low);
+	Scalar gr_high = Scalar(H_gr_high, S_gr_high, V_gr_high);
 
 	Scalar ye_low  = Scalar(19, 117, 213);
 	Scalar ye_high = Scalar(51, 204, 255);
@@ -40,6 +55,15 @@ int main()
 	Scalar pr_high = Scalar(157, 148, 174);
 
 	/*  create trackbars in "control" window */
+	createTrackbar("LowH_green", "Control", &H_gr_low, 179);
+	createTrackbar("HighH_green", "Control", &H_gr_high, 179);
+
+	createTrackbar("LowS_green", "Control", &S_gr_low, 255);
+	createTrackbar("HighS_green", "Control", &S_gr_high, 255);
+
+	createTrackbar("LowV_green", "Control", &V_gr_low, 255);
+	createTrackbar("HighV_green", "Control", &V_gr_high, 255);
+
 	/*
 	   createTrackbar("LowH_orange", "Control", &iLowH_or, 179);
 	   createTrackbar("HighH_orange", "Control", &iHighH_or, 179);
@@ -47,25 +71,53 @@ int main()
 	   createTrackbar("LowH_yellow", "Control", &iLowH_ye, 179);
 	   createTrackbar("HighH_yellow", "Control", &iHighH_ye, 179);
 
-	   createTrackbar("LowH_green", "Control", &iLowH_gr, 179);
-	   createTrackbar("HighH_green", "Control", &iHighH_gr, 179);
 
 	   createTrackbar("LowS", "Control", &iLowS, 255);
 	   createTrackbar("HighS", "Control", &iHighS, 255);
 
 	   createTrackbar("LowV", "Control", &iLowV, 255);
 	   createTrackbar("HighV", "Control", &iHighV, 255);
-	   */
+	   */ 
 
 	/* capture temp image from camera */
 	Mat imgTmp;
 	cap.read(imgTmp);
 
 	/* create black image with size as camera output */
-	Mat imgLines = Mat::zeros(imgTmp.size(), CV_8UC3);;
+	//Mat imgLines = Mat::zeros(imgTmp.size(), CV_8UC3);;
 
+	// -----------------
+	// 5 second delay
+	int timer = 5000;
+	while (timer > 0) {
+		Mat imgOriginal;
+		bool bSuccess = cap.read(imgOriginal);
+		if (!bSuccess) {
+			cout <<"cant read frame from video stream"<<endl;
+			break;
+		}
+
+		imshow("Original", imgOriginal);
+
+		waitKey(100);	
+		timer -= 100;
+	}
+
+
+	// Point holding array
+	int alen = 100;
+	int counter = 0;
+	Point thumb_holding[alen];
+	Point index_holding[alen];
+	Point middle_holding[alen];
+	Point ring_holding[alen];
+	Point pinky_holding[alen];
+	Point palm_holding[alen];	
 
 	while (true) {
+		/* create black image with size as camera output */
+		Mat imgLines = Mat::zeros(imgTmp.size(), CV_8UC3);;
+
 		Mat imgOriginal;
 		bool bSuccess = cap.read(imgOriginal);
 
@@ -82,16 +134,16 @@ int main()
 		imgThresholded[4] = getThresholdedImage(imgOriginal, pk_low, pk_high);
 		imgThresholded[5] = getThresholdedImage(imgOriginal, pr_low, pr_high);
 
-		/*
-		   imshow("Thresholded Image Green", imgThresholded[0]);
-		   imshow("Thresholded Image Yellow", imgThresholded[1]);
-		   imshow("Thresholded Image Orange", imgThresholded[2]);
-		   imshow("Thresholded Image Blue", imgThresholded[3]);
-		   imshow("Thresholded Image Pink", imgThresholded[4]);
-		   imshow("Thresholded Image Purple", imgThresholded[5]);
-		   */
 
-		Point p_curr[6];
+		imshow("Thresholded Image Green", imgThresholded[0]);
+		imshow("Thresholded Image Yellow", imgThresholded[1]);
+		imshow("Thresholded Image Orange", imgThresholded[2]);
+		imshow("Thresholded Image Blue", imgThresholded[3]);
+		imshow("Thresholded Image Pink", imgThresholded[4]);
+		imshow("Thresholded Image Purple", imgThresholded[5]);
+
+
+		Point *p_curr = new Point [6];
 		int i;
 		for (i = 0; i < 6; i++) {
 			p_curr[i] = getPoint(imgThresholded[i]);
@@ -106,12 +158,51 @@ int main()
 
 		imgOriginal = imgOriginal + imgLines;
 		imshow("Original", imgOriginal);
-		/* printf("O(%d, %d), Y(%d, %d), G(%d, %d)\n", p_curr[0].x, p_curr[0].y
-		 *                 , p_curr[1].x, p_curr[1].y, p_curr[2].x, p_curr[2].y);
-		 *                         */
+
+		/*	
+			for (i = 0; i < 6; i++) {
+			printf("(%d, %d) ", p_curr[i].x, p_curr[i].y);
+			}
+			putchar('\n');
+			*/
+
+		/*
+		// SAVE GESTURE
+		// write to array
+		if (counter < alen/2) {
+		thumb_holding[counter] = p_curr[0];
+		index_holding[counter] = p_curr[1];
+		middle_holding[counter] = p_curr[2];
+		ring_holding[counter] = p_curr[3];
+		pinky_holding[counter] = p_curr[4];
+		palm_holding[counter] = p_curr[5];
+
+		counter++;
+		} else {
+		Point *gesture = avgGesture(palm_holding, thumb_holding,
+		index_holding, middle_holding, ring_holding,
+		pinky_holding, alen);
+		for (i = 0; i < 5; i++) {
+		printf("(%d, %d)\n", gesture[i].x, gesture[i].y);
+		}
+		break;
+		}
+		*/
+
+		// TEST GESTURE
+
+		// create array to hold transformed coords 
+		Point *transcoord = new Point [5];
+	   	transcoord =  transCoord(p_curr);
+
+		//int test;
+		int glen = 1;
+		if (compareGesture(high_five, glen, transcoord) != -1) {
+			printf("Correct! this is a high-five!\n");
+		}
 
 		if (waitKey(20) == 27) {
-			cout <<"esk key is pressed by user"<< endl;
+			cout <<"esc key is pressed by user"<< endl;
 			break;
 		}
 	}

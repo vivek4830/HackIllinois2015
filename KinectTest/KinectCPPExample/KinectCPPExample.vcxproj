@@ -28,7 +28,7 @@
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>v120</PlatformToolset>
-    <CharacterSet>MultiByte</CharacterSet>
+    <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -67,7 +67,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(KINECTSDK20_DIR)\lib\x86;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(KINECTSDK20_DIR)\lib\x86;$(LibraryPath);$(KINECTSDK20_DIR)Redist\VGB\$(Platform)\vgbtechs;$(TargetDir)\vgbtechs</LibraryPath>
     <IncludePath>$(KINECTSDK20_DIR)\inc;$(VC_IncludePath);$(WindowsSDK_IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -80,8 +80,8 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>E:\Programs\opencv\build\x86\vc12\lib;E:\Programs\opencv\build\x86\vc12\staticlib;E:\Programs\opencv\build\x86\vc12\bin</AdditionalLibraryDirectories>
-      <AdditionalDependencies>opencv_core2410d.lib;opencv_imgproc2410d.lib;opencv_highgui2410d.lib;opencv_ml2410d.lib;opencv_video2410d.lib;opencv_features2d2410d.lib;opencv_calib3d2410d.lib;opencv_objdetect2410d.lib;opencv_flann2410d.lib;kinect20.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>E:\Programs\opencv\build\x86\vc12\lib;E:\Programs\opencv\build\x86\vc12\staticlib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>opencv_core2410d.lib;opencv_imgproc2410d.lib;opencv_highgui2410d.lib;opencv_ml2410d.lib;opencv_video2410d.lib;opencv_features2d2410d.lib;opencv_calib3d2410d.lib;opencv_objdetect2410d.lib;opencv_flann2410d.lib;kinect20.lib;Kinect20.VisualGestureBuilder.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
   </ItemDefinitionGroup>
@@ -135,10 +135,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="KinectTest.cpp" />
+    <ClCompile Include="KinectManager.cpp" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="KinectTest.h" />
+    <ClInclude Include="KinectManager.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Database\Seated.gbd">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

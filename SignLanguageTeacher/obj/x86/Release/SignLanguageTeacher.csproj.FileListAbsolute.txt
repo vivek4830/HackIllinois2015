@@ -21,3 +21,4 @@ E:\Documents\College\HackIllinois\HackIllinois2015\SignLanguageTeacher\obj\x86\R
 E:\Documents\College\HackIllinois\HackIllinois2015\SignLanguageTeacher\obj\x86\Release\SignLanguageTeacher.csproj.GenerateResource.Cache
 E:\Documents\College\HackIllinois\HackIllinois2015\SignLanguageTeacher\obj\x86\Release\SignLanguageTeacher.exe
 E:\Documents\College\HackIllinois\HackIllinois2015\SignLanguageTeacher\obj\x86\Release\SignLanguageTeacher.pdb
+E:\Documents\College\HackIllinois\HackIllinois2015\SignLanguageTeacher\obj\x86\Release\SignLanguageTeacher.csprojResolveAssemblyReference.cache

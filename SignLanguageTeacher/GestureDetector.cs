@@ -172,7 +172,6 @@ namespace Microsoft.Samples.Kinect.DiscreteGestureBasics
 
                     if (discreteResults != null)
                     {
-                        Console.WriteLine(this.order);
                         // We only have one gesture in this source object, but you can get multiple gestures
                         foreach (Gesture gesture in this.vgbFrameSource.Gestures)
                         {
